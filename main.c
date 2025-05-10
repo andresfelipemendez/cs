@@ -2,7 +2,8 @@
 #include <dirent.h>
 #include <stdlib.h>
 #include <errno.h>
-
+#include <sys/stat.h>
+#include <time.h>
 int main() {
 	DIR *dir;
 	dir = opendir(".");
@@ -15,8 +16,14 @@ int main() {
 
 	struct dirent *entry;
 	errno = 0;
+	struct stat buf;
 	while((entry = readdir(dir)) != NULL) {
 		printf("%s\n", entry->d_name);
+		if(stat(entry->d_name, &buf) == 0) {
+			char *time_str = ctime(&buf.st_mtime);
+			printf("modified %s", time_str);
+		}
+		
 	}
 
 	if(errno != 0) {
